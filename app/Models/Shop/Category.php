@@ -17,7 +17,7 @@ class Category extends Model
         'is_visible' => 'boolean'
     ];
 
-    protected $fillable = ['name', 'slug', 'description'];
+    protected $fillable = ['name', 'slug', 'parent_id', 'is_visible', 'description', 'seo_title', 'seo_description'];
 
     public function children(): HasMany{
         return $this->hasMany(Category::class, 'parent_id');
