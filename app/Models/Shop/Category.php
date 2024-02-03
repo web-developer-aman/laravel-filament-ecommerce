@@ -2,6 +2,7 @@
 
 namespace App\Models\Shop;
 
+use App\Models\Shop\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,11 @@ class Category extends Model
 
     public function parent(): BelongsTo{
         return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'shop_category_product', 'shop_category_id', 'shop_product_id');
     }
 
     

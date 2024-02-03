@@ -13,6 +13,25 @@ return new class extends Migration
     {
         Schema::create('shop_products', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('shop_brand_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('name');
+            $table->string('slug')->unique()->nullable();
+            $table->string('sku')->unique()->nullable();
+            $table->string('barcode')->unique()->nullable();
+            $table->longText('description')->nullable();
+            $table->unsignedBigInteger('qty')->default(0);
+            $table->unsignedBigInteger('security_stock')->default(0);
+            $table->boolean('featured')->default(false);
+            $table->boolean('is_visible')->default(false);
+            $table->decimal('old_price', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('cost', 10, 2)->nullable();
+            $table->enum('type',['deliverable','downloadable'])->nullable();
+            $table->boolean('backorder')->default(false);
+            $table->boolean('requires_shipping')->default(false);
+            $table->date('published_at')->nullable();
+            $table->string('seo_title',60)->nullable();
+            $table->string('seo_description',160)->nullable();
             $table->timestamps();
         });
     }
