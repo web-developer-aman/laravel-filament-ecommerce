@@ -4,12 +4,14 @@ namespace App\Models\Shop;
 
 use App\Models\Shop\Brand;
 use App\Models\Shop\Category;
+use Spatie\MediaLibrary\HasMedia;
+use App\Models\Shop\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
@@ -57,5 +59,15 @@ class Product extends Model implements HasMedia
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'shop_category_product', 'shop_product_id', 'shop_category_id')->withTimestamps();
+    }
+
+    /**
+     * Get all of the comments for the Product
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function variations(): HasMany
+    {
+        return $this->hasMany(ProductVariation::class, 'shop_product_id');
     }
 }
