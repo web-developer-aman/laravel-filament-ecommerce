@@ -26,7 +26,7 @@ class CustomerResource extends Resource
 
     public static ?string $slug = 'shop/customers';
 
-    public static ?int $navigationSort = 2;
+    public static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
 
