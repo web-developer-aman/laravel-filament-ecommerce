@@ -13,7 +13,9 @@ class OrderItem extends Model
 
     protected $fillable = [
         'qty',
+        'sort',
         'unit_price',
+        'shop_product_id'
     ];
 
     

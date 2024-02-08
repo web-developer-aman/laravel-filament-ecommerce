@@ -4,6 +4,7 @@ namespace App\Models\Shop;
 
 use App\Models\Shop\Brand;
 use App\Models\Shop\Category;
+use App\Models\Shop\OrderItem;
 use Spatie\MediaLibrary\HasMedia;
 use App\Models\Shop\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
@@ -70,4 +71,15 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(ProductVariation::class, 'shop_product_id');
     }
+
+     /**
+     * Get all of the items for the Order
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class, 'shop_product_id');
+    }
+
 }

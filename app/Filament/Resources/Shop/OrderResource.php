@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Shop\OrderResource\Pages;
+use App\Filament\Clusters\Products\Resources\ProductResource;
 use App\Filament\Resources\Shop\OrderResource\RelationManagers;
 
 class OrderResource extends Resource
@@ -182,7 +183,7 @@ class OrderResource extends Resource
                     ->distinct()
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                     ->columnSpan([
-                        'md' => 5
+                        'md' => 5,
                     ])
                     ->searchable(),
 
@@ -203,8 +204,31 @@ class OrderResource extends Resource
                     ->columnSpan([
                         'md' => 3
                     ])
+            ])
+            ->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(function (array $arguments, Repeater $component): ?string {
+                        $itemData = $component->getRawItemState($arguments['item']);
 
-            ]);
+                        $product = Product::find($itemData['shop_product_id']);
+
+                        if (! $product) {
+                            return null;
+                        }
+
+                        return ProductResource::getUrl('edit', ['record' => $product]);
+                    }, shouldOpenInNewTab: true)
+                    ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['shop_product_id'])),
+            ])
+            ->orderColumn('sort')
+            ->defaultItems(1)
+            ->hiddenLabel()
+            ->columns([
+                'md' => 10,
+            ])
+            ->required();
             
     }
 }
