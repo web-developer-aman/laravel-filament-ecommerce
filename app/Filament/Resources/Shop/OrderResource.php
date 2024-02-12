@@ -54,8 +54,10 @@ class OrderResource extends Resource
                             ])
                             ->schema([
                                 static::getItemsRepeater()
-                            ])
-
+                            ]),
+                        Forms\Components\Section::make()
+                            ->schema(static::getPrice())
+                            
                     ])
                     ->columnSpan(['lg' => fn (?Order $record) => $record === null ? 3 : 2])
             ])
@@ -180,6 +182,7 @@ class OrderResource extends Resource
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('unit_price', Product::find($state)?->price ?? 0))
+                    
                     ->distinct()
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                     ->columnSpan([
@@ -205,6 +208,10 @@ class OrderResource extends Resource
                         'md' => 3
                     ])
             ])
+            ->live(true)
+            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                        self::updateTotals($get, $set);
+            })
             ->extraItemActions([
                 Action::make('openProduct')
                     ->tooltip('Open product')
@@ -229,6 +236,75 @@ class OrderResource extends Resource
                 'md' => 10,
             ])
             ->required();
-            
+    }
+
+    public static function getPrice(): array 
+    {
+        return [
+            Forms\Components\Section::make()
+            ->columns(2)
+            ->maxWidth('1/2')
+            ->schema([
+                Forms\Components\Select::make('shipping_method')
+                ->placeholder('Select shipping method')
+                ->options([
+                    'percentage' => 'Percentage',
+                    'fixed' => 'Fixed Rate',
+                ])
+                // Live field, as we need to re-calculate the total on each change
+                ->live(true)
+                // This enables us to display the subtotal on the edit page load
+                ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                    self::updateTotals($get, $set);
+                }),
+                Forms\Components\TextInput::make('shipping_price')
+                ->required()
+                ->numeric()
+                ->default(20)
+                // Live field, as we need to re-calculate the total on each change
+                ->live(true)
+                // This enables us to display the subtotal on the edit page load
+                ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                    self::updateTotals($get, $set);
+                }),
+                Forms\Components\TextInput::make('total_price')
+                    ->label('Total price')
+                    ->disabled()
+                    ->dehydrated()
+                    ->numeric()
+                    ->required()
+                    // Read-only, because it's calculated
+                    ->prefix('$')
+                    ->afterStateHydrated(function (Forms\Get $get, Forms\Set $set) {
+                        self::updateTotals($get, $set);
+                })
+                ->columnSpan(2),
+            ])
+        ];
+    }
+
+    // This function updates totals based on the selected products and quantities
+    public static function updateTotals(Forms\Get $get, Forms\Set $set): void
+    {
+        // Retrieve all selected products and remove empty rows
+        $selectedProducts = collect($get('items'))->filter(fn($item) => !empty($item['shop_product_id']) && !empty($item['qty']));
+    
+        // Retrieve prices for all selected products
+        $prices = Product::find($selectedProducts->pluck('shop_product_id'))->pluck('price', 'id');
+    
+        // Calculate subtotal based on the selected products and quantities
+        $subtotal = $selectedProducts->reduce(function ($subtotal, $product) use ($prices) {
+            return $subtotal + ($prices[$product['shop_product_id']] * $product['qty']);
+        }, 0);
+
+        if($get('shipping_method') === 'fixed'){
+            $shippingPrice = $get('shipping_price');
+        }else{
+            $shippingPrice = ($subtotal * ($get('shipping_price') / 100));
+        }
+    
+        // Update the state with the new values
+        $set('subtotal', number_format($subtotal, 2, '.', ''));
+        $set('total_price', number_format($subtotal + $shippingPrice, 2, '.', ''));
     }
 }

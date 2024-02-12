@@ -23,7 +23,8 @@ class Order extends Model
         'currency',
         'notes',
         'shipping_price',
-        'shipping_method'
+        'shipping_method',
+        'shop_customer_id',
     ];
 
     protected $casts = [

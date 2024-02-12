@@ -34,24 +34,24 @@ class CreateOrder extends CreateRecord
             ->columns(null);
     }
 
-    protected function afterCreate(): void
-    {
-        /** @var Order $order */
-        $order = $this->record;
+    // protected function afterCreate(): void
+    // {
+    //     /** @var Order $order */
+    //     $order = $this->record;
 
-        /** @var User $user */
-        $user = auth()->user();
+    //     /** @var User $user */
+    //     $user = auth()->user();
 
-        Notification::make()
-            ->title('New order')
-            ->icon('heroicon-o-shopping-bag')
-            ->body("**{$order->customer?->name} ordered {$order->items->count()} products.**")
-            ->actions([
-                Action::make('View')
-                    ->url(OrderResource::getUrl('edit', ['record' => $order])),
-            ])
-            ->sendToDatabase($user);
-    }
+    //     Notification::make()
+    //         ->title('New order')
+    //         ->icon('heroicon-o-shopping-bag')
+    //         ->body("**{$order->customer?->name} ordered {$order->items->count()} products.**")
+    //         ->actions([
+    //             Action::make('View')
+    //                 ->url(OrderResource::getUrl('edit', ['record' => $order])),
+    //         ])
+    //         ->sendToDatabase($user);
+    // }
 
     /** @return Step[] */
     protected function getSteps(): array
@@ -67,7 +67,11 @@ class CreateOrder extends CreateRecord
                     Section::make()->schema([
                         OrderResource::getItemsRepeater(),
                     ]),
+                    Section::make()->schema(
+                        OrderResource::getPrice(),
+                    ),
                 ]),
+               
         ];
     }
 }
