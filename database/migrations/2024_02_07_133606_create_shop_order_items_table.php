@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('shop_order_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('sort')->default(0);
-            $table->foreignId('shop_order_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('shop_product_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('shop_order_id')->nullable()->cascadeOnDelete();;
+            $table->foreignId('shop_product_id')->nullable()->cascadeOnDelete();;
+            $table->foreignId('shop_variation_id')->nullable()->cascadeOnDelete();;
             $table->integer('qty');
             $table->decimal('unit_price', 10, 2);
             $table->timestamps();

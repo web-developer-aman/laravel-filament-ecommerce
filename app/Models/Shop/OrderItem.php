@@ -15,7 +15,8 @@ class OrderItem extends Model
         'qty',
         'sort',
         'unit_price',
-        'shop_product_id'
+        'shop_product_id',
+        'shop_variation_id'
     ];
 
     

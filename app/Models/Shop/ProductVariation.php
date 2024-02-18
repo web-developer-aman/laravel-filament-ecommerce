@@ -4,11 +4,13 @@ namespace App\Models\Shop;
 
 use App\Models\Shop\Product;
 use Spatie\MediaLibrary\HasMedia;
+use App\Models\Shop\AttributeValue;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ProductVariation extends Model implements HasMedia
 {
@@ -32,6 +34,16 @@ class ProductVariation extends Model implements HasMedia
 
     public function parent(): BelongsTo{
         return $this->belongsTo(ProductVariation::class, 'parent_id');
+    }
+
+    /**
+     * The roles that belong to the Product
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function attributeValues(): BelongsToMany
+    {
+        return $this->belongsToMany(AttributeValue::class, 'product_variation_attribute_value', 'shop_product_variation_id', 'shop_attribute_value_id')->withTimestamps();
     }
 
     /**

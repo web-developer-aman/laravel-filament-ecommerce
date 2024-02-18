@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shop_product_variations', function (Blueprint $table) {
+        Schema::create('product_variation_attribute_value', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shop_product_id')->constrained('shop_products')->cascadeOnDelete();
-            $table->string('sku')->unique()->nullable();
-            $table->decimal('price', 10, 2)->nullable();
-            $table->unsignedBigInteger('qty')->default(0);
+            $table->foreignId('shop_product_variation_id')->nullable()->cascadeOnDelete();
+            $table->foreignId('shop_attribute_value_id')->nullable()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shop_product_variations');
+        Schema::dropIfExists('product_variation_attribute_value');
     }
 };

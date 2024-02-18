@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Squire\Models\Currency;
 use App\Models\Shop\Product;
 use Filament\Resources\Resource;
+use App\Models\Shop\ProductVariation;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Actions\Action;
@@ -181,7 +182,17 @@ class OrderResource extends Resource
                     ->options(Product::query()->pluck('name', 'id'))
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('unit_price', Product::find($state)?->price ?? 0))
+                    ->live()
+                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        if (Product::find($state) && Product::find($state)->variations()->count() == 0) { 
+                            $set('unit_price', Product::find($state)?->price?? 0);  
+                        }else{
+                            $set('unit_price', null);
+                        }
+
+                        $set('shop_variation_id', null);
+                        
+                    })
                     
                     ->distinct()
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
@@ -189,7 +200,25 @@ class OrderResource extends Resource
                         'md' => 5,
                     ])
                     ->searchable(),
-
+                
+                    Forms\Components\Select::make('shop_variation_id')
+                    ->label('Variation')
+                    ->options(fn (Forms\Get $get) => (
+                        ProductVariation::query()
+                            ->where('shop_product_id', $get('shop_product_id'))
+                            ->pluck('name', 'id')
+                            
+                    ))
+                    
+                    ->live()
+                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('unit_price', ProductVariation::find($state)?->price ?? 0))
+                    ->searchable()
+                    ->preload()
+                    ->columnSpan([
+                        'md' => 5,
+                    ]),
+                
+                    
                 Forms\Components\TextInput::make('qty')
                     ->label('Quantity')
                     ->numeric()
