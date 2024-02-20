@@ -42,6 +42,8 @@ class AttributeResource extends Resource
                         ->maxLength('255'),
 
                         Forms\Components\Toggle::make('is_visible')
+                        ->default(true)
+                        ->label('Visible to customers'),
                     ])
                 
             ]);

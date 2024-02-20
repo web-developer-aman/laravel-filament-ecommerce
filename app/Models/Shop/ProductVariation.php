@@ -20,21 +20,21 @@ class ProductVariation extends Model implements HasMedia
     protected $table ='shop_product_variations';
 
     protected $fillable = [
-        'name', 'type', 'order','sku', 'price', 'parent_id'
+        'sku', 'price', 'qty'
     ];
 
-    public static function boot()
-    {
-        parent::boot();
+    // public static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function($variation){
-            $variation->order = ProductVariation::where('shop_product_id', $variation->shop_product_id)->max('order') + 1;
-        });
-    }
+    //     static::creating(function($variation){
+    //         $variation->order = ProductVariation::where('shop_product_id', $variation->shop_product_id)->max('order') + 1;
+    //     });
+    // }
 
-    public function parent(): BelongsTo{
-        return $this->belongsTo(ProductVariation::class, 'parent_id');
-    }
+    // public function parent(): BelongsTo{
+    //     return $this->belongsTo(ProductVariation::class, 'parent_id');
+    // }
 
     /**
      * The roles that belong to the Product

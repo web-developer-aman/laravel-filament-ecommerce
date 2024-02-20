@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Shop\Product;
 use App\Models\Shop\Attribute;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,6 +27,7 @@ class VariationsRelationManager extends RelationManager
                 ->options(function (Builder $query) use ($attribute) {
                     return $attribute->values()->pluck('value', 'id');
                 });
+                
         }
         return $form
             ->schema([
